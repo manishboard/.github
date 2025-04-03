@@ -1,4 +1,4 @@
-# Manishboard - GitHub Organization Infrastructure
+# Manishboard
 
 Manishboard is a Java Spring Boot application deployed on Kubernetes. The infrastructure is built using Terraform, and the deployment process is automated using GitHub Actions, Helm, and GitHub Container Registry (GHCR).
 
