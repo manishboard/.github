@@ -1,30 +1,70 @@
-# Project Plan
+# Manishboard - GitHub Organization Infrastructure
 
-## Steps
+Manishboard is a Java Spring Boot application deployed on Kubernetes. The infrastructure is built using Terraform, and the deployment process is automated using GitHub Actions, Helm, and GitHub Container Registry (GHCR).
 
-1. **Push Backend on DockerHub**
-   - [x] Create a Docker image for the backend.
-   - [x] Push the image to DockerHub as a public repository.
+## Overview of Infrastructure
 
-2. **Run Backend on Local K3s**
-   - [x] Pull the backend image from DockerHub.
-   - [x] Deploy and run the backend service on a local K3s cluster.
+### 1. **Infrastructure Provisioning**
+- **Terraform** provisions the Kubernetes cluster.
+- The cluster is hosted on **Linode Kubernetes Engine (LKE)**.
+- **Cert-Manager** manages SSL/TLS certificates using **Let's Encrypt** and Cloudflare.
 
-3. **Deploy Frontend on GitHub Pages**
-   - [ ] Host the frontend on GitHub Pages.
-   - [ ] Configure the frontend to communicate with the backend running on the local K3s cluster.
+### 2. **Application Development and Containerization**
+- The **Java Spring Boot** application is built and packaged as a **Docker image**.
+- The image is stored in **GitHub Container Registry (GHCR.io)**.
 
-4. **Create an EKS Cluster**
-   - [ ] Set up an Amazon EKS cluster for deploying applications.
+### 3. **Continuous Integration & Deployment**
+- **GitHub Actions** automates the build and deployment process.
+- **Helm** is used to deploy the application on Kubernetes.
 
-5. **Run Pods on EKS**
-   - [ ] Deploy backend and other necessary services as pods.
-   - [ ] Ensure pods pull the backend image from the public DockerHub repository.
+## Architecture Overview
+```mermaid
+graph TD;
+    A[User] -->|Requests| B[Frontend]
+    B -->|API Calls| C[Backend]
+    C -->|Fetches Data| D[Database]
+```
 
-6. **Push Image to ECR and Use in Pods**
-   - [ ] Push the backend image to AWS Elastic Container Registry (ECR).
-   - [ ] Update deployments to use the ECR image instead of DockerHub.
+## Deployment Process
+1. **Code Push**: Developers push code to the GitHub repository.
+2. **CI/CD Trigger**: GitHub Actions triggers the build and deployment workflows.
+3. **Docker Build & Push**: The application is containerized and stored in GHCR.
+4. **Deployment via Helm**: The Kubernetes cluster pulls the image and deploys the application.
+## Workflow Breakdown
 
-7. **Create a Helm Chart**
-   - [ ] Develop a Helm chart to automate the deployment process.
-   - [ ] Ensure it manages the entire system, including backend and necessary configurations.
+### 2. **Deployment Flow**
+```mermaid
+sequenceDiagram
+    participant Dev as Developer
+    participant GitHub as GitHub Actions
+    participant GHCR as GitHub Container Registry
+    participant K8S as Kubernetes Cluster
+    participant Helm as Helm Deployment
+
+    Dev->>GitHub: Push Code to Repo
+    GitHub->>GitHub: Build Docker Image
+    GitHub->>GHCR: Push Image to GHCR.io
+    GitHub->>K8S: Trigger Helm Deployment
+    Helm->>K8S: Deploy Application
+    K8S->>Dev: Application is Live
+```
+
+## Kubernetes Architecture
+```mermaid
+flowchart TD;
+    A[Kubernetes Cluster] -->|Manages| B[Pods]
+    B -->|Contains| C[Containers]
+    A -->|Exposes| D[Service]
+    D -->|Routes Traffic| E[Ingress Controller]
+    E -->|Uses| F[Cert-Manager for TLS]
+```
+
+## Summary
+- **Terraform** provisions the infrastructure.
+- **GitHub Actions** automates the CI/CD process.
+- **GitHub Container Registry (GHCR.io)** stores the container images.
+- **Helm** manages Kubernetes deployments.
+- **Cert-Manager** ensures secure communication with **Let's Encrypt**.
+
+Manishboard's infrastructure is designed for scalability, automation, and security, ensuring a robust deployment strategy.
+
